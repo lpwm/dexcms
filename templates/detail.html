@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}{{article.title}}{% endblock %}
+{% block body %}
+<div class="row">
+    <div class="col-12 shadow">
+        <div class="p-4">
+            <h3>{{article.title}}</h3>
+            <hr>
+            <p align="center">
+                <span>作者: {{article.author.username}}</span>
+                <span class="ml-4">时间: {{article.create_time}}</span>
+            </p>
+            <hr>
+            <p>
+                {{article.content}}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

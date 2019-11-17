@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Flask建站练习{% endblock %}
+{% block body %}
+<div class="row">
+    <div class="col-12 shadow p-4">
+        {% for a in articles %}
+        <div class="card mt-4">
+            <div class="card-body">
+                <a href="{{url_for('detail', article_id=a.id)}}">
+                    <h4 class="card-title">{{a.title}}</h4>
+                </a>
+                <p class="card-text">{{a.content}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
