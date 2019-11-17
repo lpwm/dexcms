@@ -1,4 +1,4 @@
-# flask_study
+# DexCms
 > 参考知了课堂教程使用Flask开发轻量CMS系统
 > https://study.163.com/course/courseMain.htm?courseId=1004091002
 # 初始化数据库命令
