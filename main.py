@@ -3,8 +3,8 @@ from sqlalchemy import text
 
 import config
 from decorators import login_check
-from models import *
 from exts import db
+from models import *
 
 app = Flask(__name__)
 app.config.from_object(config)

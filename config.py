@@ -1,4 +1,5 @@
 import os
+
 DEBUG = True
 TEMPLATE_DEBUG = True
 
@@ -9,12 +10,14 @@ SECRET_KEY = os.urandom(24)
 JSON_AS_ASCII = False
 
 # 数据库配置
-HOSTNAME = '10.41.56.123'
+HOSTNAME = '127.0.0.1'
 PORT = '3306'
 DATABASE = 'flask_study'
 USERNAME = 'root'
 PASSWORD = 'lpwm86'
-DB_URI = 'mysql+mysqldb://{}:{}@{}:{}/{}?charset=utf8'.format(USERNAME,
+
+# Python 3.x中需要使用PyMySQL作为数据库中间件
+DB_URI = 'mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(USERNAME,
                                                               PASSWORD, HOSTNAME, PORT, DATABASE)
 SQLALCHEMY_DATABASE_URI = DB_URI
 SQLALCHEMY_TRACK_MODIFICATIONS = True
