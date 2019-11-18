@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/admin.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+<!--导航条-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="{{ url_for('index') }}">DexCMS</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item text-light">
+                后台管理
+            </li>
+        </ul>
+        <div class="form-inline my-2 my-lg-0 navbar-right">
+            {% if True %}
+            <a href="{{ url_for('profile') }}" class="btn btn-outline-success my-2 my-sm-0">网站首页</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-info my-2 my-sm-0 ml-2">注销</a>
+            {% endif %}
+        </div>
+
+    </div>
+</nav>
+
+<!--左侧菜单-->
+<div class="admin_left_nav">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Active</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+        </li>
+    </ul>
+</div>
+
+<div class="container" id="main">
+    {% block body %}{% endblock %}
+</div>
+
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/ckeditor/4.12.1/ckeditor.js"></script>
+{% block script %}
+{% endblock %}
+</body>
+</html>

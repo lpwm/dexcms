@@ -125,6 +125,14 @@ def add():
         result = {'message': '文章提交成功', 'status': 'ok'}
         return jsonify(result)
 
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+    """
+    后台管理
+    :return:
+    """
+    if request.method == 'GET':
+        return render_template('admin/index.html')
 
 @app.before_request
 def before_request():
