@@ -10,6 +10,19 @@ class User(db.Model):
     password = db.Column(db.String(100), nullable=False)
     username = db.Column(db.String(50), nullable=False)
 
+    @property
+    def serialize(self):
+        """
+        转json格式用
+        :return:
+        """
+        return {
+            'id': self.id,
+            'tel': self.tel,
+            'password': self.password,
+            'username': self.username
+        }
+
 
 class Article(db.Model):
     __tablename__ = 'question'

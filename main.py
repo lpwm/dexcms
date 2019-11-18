@@ -125,6 +125,7 @@ def add():
         result = {'message': '文章提交成功', 'status': 'ok'}
         return jsonify(result)
 
+
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     """
@@ -133,6 +134,29 @@ def admin():
     """
     if request.method == 'GET':
         return render_template('admin/index.html')
+
+
+@app.route('/admin/users', methods=['GET', 'POST'])
+def admin_users():
+    """
+    用户管理
+    :return:
+    """
+    if request.method == 'GET':
+        page = request.args.get(key='page', default=1, type=int)
+        pagination = User.query.paginate(page, per_page=3, error_out=False)
+        content = {
+            'users': pagination.items,
+            'pagination': pagination
+        }
+        return render_template('admin/users.html', **content)
+    if request.method == 'POST':
+        page = request.form.get(key='page', default=1, type=int)
+        pagination = User.query.paginate(page, per_page=3, error_out=False)
+        users = [i.serialize for i in pagination.items]
+        return jsonify(users)
+    # TODO 使用json传给前端异步刷新数据
+
 
 @app.before_request
 def before_request():

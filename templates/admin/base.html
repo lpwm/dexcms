@@ -3,60 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/admin.css">
+    <link rel="stylesheet" href="/static/layuimini/lib/layui-v2.5.4/css/layui.css" media="all">
+    {#    <link rel="stylesheet" href="/static/layuimini/css/layuimini.css" media="all">#}
+    <link rel="stylesheet" href="/static/layuimini/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <!--[if lt IE 9]>
+    <script src="/static/html5.js"></script>
+    <script src="/static/respond.min.js"></script>
+    <![endif]-->
     {% block head %}{% endblock %}
 </head>
-<body>
-<!--导航条-->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="{{ url_for('index') }}">DexCMS</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+<body class="layui-layout-body">
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item text-light">
-                后台管理
-            </li>
-        </ul>
-        <div class="form-inline my-2 my-lg-0 navbar-right">
-            {% if True %}
-            <a href="{{ url_for('profile') }}" class="btn btn-outline-success my-2 my-sm-0">网站首页</a>
-            <a href="{{ url_for('logout') }}" class="btn btn-outline-info my-2 my-sm-0 ml-2">注销</a>
-            {% endif %}
+<div class="layui-layout layui-layout-admin">
+    {# 顶部 #}
+    <div class="layui-header header">
+        <div class="layui-logo">
+            DexCMS管理后台
         </div>
 
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    贤心
+                    <span class="layui-nav-more"></span>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">注销</a></dd>
+                </dl>
+            </li>
+        </ul>
     </div>
-</nav>
-
-<!--左侧菜单-->
-<div class="admin_left_nav">
-    <ul class="nav flex-column">
-        <li class="nav-item">
-            <a class="nav-link active" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-        </li>
-    </ul>
+    {# 左侧菜单 #}
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">文章管理<span class="layui-nav-more"></span></a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">列表一</a></dd>
+                        <dd><a href="javascript:;">列表二</a></dd>
+                        <dd><a href="javascript:;">列表三</a></dd>
+                        <dd><a href="">超链接</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href="">栏目管理</a></li>
+                <li class="layui-nav-item layui-this"><a href="{{ url_for('admin_users') }}">用户管理</a></li>
+            </ul>
+        </div>
+    </div>
+    {# 主体区域 #}
+    <div class="layui-body" style="padding:15px;">
+        {% block body %}{% endblock %}
+    </div>
+    {# 底部footer #}
+    <div class="layui-footer">
+        <p align="right">© DexCMS 2019</p>
+    </div>
 </div>
 
-<div class="container" id="main">
-    {% block body %}{% endblock %}
-</div>
 
-<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<script src="https://cdn.bootcss.com/ckeditor/4.12.1/ckeditor.js"></script>
+<script src="/static/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+<script src="/static/layuimini/lib/layui-v2.5.4/layui.js?v=1.0.4" charset="utf-8"></script>
+{#<script src="/static/layuimini/js/lay-config.js?v=1.0.4" charset="utf-8"></script>#}
+<script src="/static/ckeditor_4.12.1.js"></script>
+<script>
+    layui.use('element', function () {
+        var element = layui.element;
+    })
+</script>
 {% block script %}
 {% endblock %}
 </body>

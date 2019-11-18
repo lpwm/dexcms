@@ -1,0 +1,81 @@
+{% extends '/admin/base.html' %}
+{% import "_macros.html" as macros %}
+{% block body %}
+    <div class="layui-row">
+        搜索栏
+    </div>
+    <div class="layui-row">
+        <table lay-filter="users_table">
+            <thead>
+            <tr>
+                <th lay-data="{field:'id', minWidth:50, align:'center'}">编号</th>
+                <th lay-data="{field:'username', minWidth:100, align:'center', sort:true}">用户名</th>
+                <th lay-data="{field:'tel', minWidth:100, align:'center'}">手机</th>
+                <th lay-data="{field:'operation', minWidth:100, align:'center'}">操作</th>
+            </tr>
+            <tbody>
+            {% for u in users %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td>{{ u.username }}</td>
+                    <td>{{ u.tel }}</td>
+                    <td>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal">重置密码</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-danger">删除</button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            </thead>
+        </table>
+        <div id="pager"></div>
+        {% if pagination %}
+            <div class="pagination justify-content-end">
+                {{ macros.pagination_widget(pagination, 'admin_users') }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        layui.use('table', function () {
+            var table = layui.table;
+
+            {#转换静态表格#}
+            table.init('users_table', {
+                height: 315,
+                limit: 5
+            })
+        });
+
+        layui.use('laypage', function () {
+            var laypage = layui.laypage;
+
+            laypage.render({
+                elem: 'pager',
+                count: {{ pagination.total }},
+                limit: {{ pagination.per_page }},
+                jump: function (obj, first) {
+                    {#当前页码#}
+                    var page = obj.curr;
+                    {#首次不执行#}
+                    if (!first) {
+                        {#location.href="/admin/users?page=" + page;#}
+                        $.ajax({
+                            url: '/admin/users',
+                            method: 'post',
+                            data: {page: page},
+                            dataType: 'json',
+                            success: function (res) {
+                                console.log(res)
+                            }
+                        })
+                    }
+
+                }
+            })
+        })
+
+    </script>
+{% endblock %}
