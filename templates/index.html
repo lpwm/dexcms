@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% import "_macros.html" as macros %}
 {% block title %}Flask建站练习{% endblock %}
 {% block body %}
 <div class="row">
@@ -6,13 +7,25 @@
         {% for a in articles %}
         <div class="card mt-4">
             <div class="card-body">
-                <a href="{{url_for('detail', article_id=a.id)}}">
-                    <h4 class="card-title">{{a.title}}</h4>
-                </a>
-                <p class="card-text">{{a.content}}</p>
+                <h4 class="card-title article_list_title">
+                    <a href="{{url_for('detail', article_id=a.id)}}">
+                        {{ a.title | truncate(50, True, '...') }}
+                    </a>
+                </h4>
+                <p>
+                    {{ a.create_time }}
+                </p>
+                <hr>
+                <!--使用|safe不对html标签转义,直接输出-->
+                <div class="card-text article_list_abstract">{{ a.content | safe | truncate(100, True, '...')}}</div>
             </div>
         </div>
         {% endfor %}
+        {%if pagination%}
+        <div class="pagination justify-content-end">
+            {{ macros.pagination_widget(pagination, '.index') }}
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

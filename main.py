@@ -17,10 +17,17 @@ def index():
     首页
     :return:
     """
+    # 获取当前页码
+    page = request.args.get(key='page', default=1, type=int)
+    # 实现分页
+    pagination = Article.query.order_by(Article.create_time.desc()).paginate(page, per_page=3, error_out=False)
     content = {
         # 这里需要注意使用text('-create_time')作为排序的参数传入,和教程中不太一样
         # 貌似是版本不一样,试了下去掉-的话不需要加text()
-        'articles': Article.query.order_by(text('-create_time')).all()
+        # 'articles': Article.query.order_by(text('-create_time')).all(),
+        # 返回分页后的文章对象
+        'articles': pagination.items,
+        'pagination': pagination
     }
     return render_template('index.html', **content)
 

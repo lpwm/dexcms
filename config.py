@@ -10,7 +10,7 @@ SECRET_KEY = os.urandom(24)
 JSON_AS_ASCII = False
 
 # 数据库配置
-HOSTNAME = '127.0.0.1'
+HOSTNAME = '10.41.56.123'
 PORT = '3306'
 DATABASE = 'flask_study'
 USERNAME = 'root'

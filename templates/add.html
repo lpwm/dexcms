@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}发布文章{% endblock %}
+{% block head %}
+<link href="https://cdn.bootcss.com/quill/2.0.0-dev.3/quill.snow.min.css" rel="stylesheet">
+{% endblock %}
 {% block body %}
 <div class="row">
     <div class="col-12 shadow p-4 m-auto">
@@ -12,7 +15,7 @@
             </div>
             <div class="form-group">
                 <label>正文</label>
-                <textarea class="form-control" name="content" placeholder="请输入问题正文" rows="10"></textarea>
+                <textarea class="form-control" id="content" placeholder="请输入问题正文" rows="10"></textarea>
             </div>
             <div class="form-inline">
                 <button type="submit" class="btn btn-lg btn-primary">提交</button>
@@ -30,10 +33,19 @@
 {% endblock %}
 
 {% block script %}
+<script src="https://cdn.bootcss.com/ckeditor/4.12.1/ckeditor.js"></script>
+
 <script>
-$("#notify").hide();
-    function asyncSubmit(){
+    //默认隐藏提交结果的alert
+    $("#notify").hide();
+
+    //初始化CKeditor编辑器
+    CKEDITOR.replace('content');
+
+    //异步提交内容
+    function asyncSubmit() {
         var data = new FormData($("#qForm")[0]);   //注意jQuery选择出来的结果是个数组,需要加上[0]获取
+        data.append('content', CKEDITOR.instances['content'].getData());    //将CKEDITOR中的内容添加到data中,否则直接post里面不包含
         $.ajax({
             url: '/add',
             method: 'POST',
@@ -48,7 +60,5 @@ $("#notify").hide();
         })
         return false;
     }
-
-
 </script>
 {% endblock %}
