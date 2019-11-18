@@ -1,3 +1,11 @@
+"""
+@File        : manager.py
+@Description : 命令行对数据库进行ORM映射更新
+@Time        : 2019/11/19 0:57
+@Author      : DexterLien
+@Email       : lpwm@qq.com
+@Software    : PyCharm
+"""
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from main import app

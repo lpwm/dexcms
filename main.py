@@ -1,9 +1,15 @@
+"""
+@File        : main.py
+@Description : 应用主入口
+@Time        : 2019/11/19 0:57
+@Author      : DexterLien
+@Email       : lpwm@qq.com
+@Software    : PyCharm
+"""
 from flask import Flask, render_template, request, session, redirect, url_for, g, jsonify
-from sqlalchemy import text
 
 import config
 from decorators import login_check
-from exts import db
 from models import *
 
 app = Flask(__name__)
@@ -143,19 +149,23 @@ def admin_users():
     :return:
     """
     if request.method == 'GET':
-        page = request.args.get(key='page', default=1, type=int)
-        pagination = User.query.paginate(page, per_page=3, error_out=False)
-        content = {
-            'users': pagination.items,
-            'pagination': pagination
-        }
-        return render_template('admin/users.html', **content)
+        return render_template('admin/users.html')
+
     if request.method == 'POST':
         page = request.form.get(key='page', default=1, type=int)
-        pagination = User.query.paginate(page, per_page=3, error_out=False)
-        users = [i.serialize for i in pagination.items]
-        return jsonify(users)
-    # TODO 使用json传给前端异步刷新数据
+        limit = request.form.get(key='limit', default=10, type=int)
+        pagination = User.query.paginate(page, per_page=limit, error_out=False)
+
+        users = pagination.items
+        users = [i.serialize for i in users]
+        total_count = User.query.count()  # 获取全部user表中的记录数量
+        result = {
+            'code': 0,
+            'msg': '',
+            'count': total_count,  # 这个是全部数据集的数量,不是分页的单页数量
+            'data': users
+        }
+        return jsonify(result)
 
 
 @app.before_request

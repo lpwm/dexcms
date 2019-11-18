@@ -1,3 +1,11 @@
+"""
+@File        : models.py
+@Description : ORM数据模型
+@Time        : 2019/11/19 0:57
+@Author      : DexterLien
+@Email       : lpwm@qq.com
+@Software    : PyCharm
+"""
 from datetime import datetime
 
 from exts import db

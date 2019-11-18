@@ -1,3 +1,11 @@
+"""
+@File        : config.py
+@Description : 系统配置
+@Time        : 2019/11/19 0:57
+@Author      : DexterLien
+@Email       : lpwm@qq.com
+@Software    : PyCharm
+"""
 import os
 
 DEBUG = True
@@ -10,7 +18,8 @@ SECRET_KEY = os.urandom(24)
 JSON_AS_ASCII = False
 
 # 数据库配置
-HOSTNAME = '10.41.56.123'
+# HOSTNAME = '10.41.56.123'
+HOSTNAME = '127.0.0.1'
 PORT = '3306'
 DATABASE = 'flask_study'
 USERNAME = 'root'
