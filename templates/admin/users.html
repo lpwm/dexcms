@@ -2,42 +2,209 @@
 {% import "_macros.html" as macros %}
 {% block body %}
     <div class="layui-row">
-        搜索栏
+        <fieldset class="layui-elem-field">
+            <legend>常用操作</legend>
+
+            <form id="searchForm" class="layui-form">
+                <div class="layui-form-item" style="margin-top:15px">
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-normal" style="margin-left:25px" onclick="addUser()">添加新用户
+                        </a>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">手机号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="tel" required lay-verify="required" placeholder="请输入手机号"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn" lay-submit lay-filter="doSearch">查找</button>
+                        <button type="reset" class="layui-btn layui-btn-primary" onclick="loadTable()">重置</button>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+
+                </div>
+            </form>
+        </fieldset>
     </div>
     <div class="layui-row">
-        <table id="users_table"></table>
+        <table id="users_table" lay-filter="users_table_layui"></table>
     </div>
+    {#表格每行后面的操作按钮集合#}
+    <script type="text/html" id="rowTool">
+        <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+        <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="reset">重置密码</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        {#注释测试#}
+    </script>
 {% endblock %}
 
 {% block script %}
     <script>
+        {#添加新用户弹窗#}
+        var addUserLayerIndex;
+        function addUser() {
+            addUserLayerIndex = layer.open({
+                type: 1,
+                title: '添加新用户',
+                area: ['600px', '400px'],
+                content: $("#addUserForm")
+            });
+        }
+
+        {#监听搜索框表单提交#}
+        var form = layui.form;
+        {#搜索用户表单#}
+        form.on('submit(doSearch)', function (data) {
+            var tel = data.field.tel
+            table.reload('users_table', {
+                //url: '/admin/users',
+                where: {
+                    method: 'query',
+                    tel: tel
+                },
+                page: {
+                    curr: 1
+                }
+            });
+            return false;
+        });
+        {#添加新用户表单#}
+        form.on('submit(submitAddUser)', function (data) {
+            var user = data.field;
+            $.ajax({
+                url: '/admin/users',
+                method: 'post',
+                data: {
+                    method: 'add',
+                    username: user.username,
+                    tel: user.tel,
+                    password: user.password1
+                },
+                success: function (ret) {
+                    layer.close(addUserLayerIndex)
+                    layer.alert(ret.msg)
+                }
+            });
+            return false;
+        });
+
         {#加载表格数据#}
         var table = layui.table;
-        table.render({
-            elem: '#users_table',
-            //height: 480,          //不指定固定值将自动适应高度
-            url: '/admin/users',
-            method: 'post',
-            request: {
-                pageName: 'page',     //调整post请求中传入后台的页码的参数名称，默认：page
-                limitName: 'limit'    //每页数据量的参数名，默认：limit
-            },
-            page: true,
-            cols: [[
-                {field: 'id', title: 'ID', width: 80, align: 'center', sort: true, fixed: 'left'},
-                {field: 'username', title: '用户名', align: 'center', width: 100},
-                {field: 'tel', title: '手机', align: 'center', width: 120},
-                {field: 'operate', title: '操作', minWidth: 200, align: 'center', toolbar: '#rowTool'}
-            ]]
+
+        function loadTable() {
+            table.render({
+                elem: '#users_table',
+                //height: 480,          //不指定固定值将自动适应高度
+                url: '/admin/users',
+                method: 'post',     //这里是ajax的请求类型
+                where: {            //发送请求的其他参数
+                    method: 'paginate'  //传给后台的额外post数据
+                },
+                request: {
+                    pageName: 'page',     //调整post请求中传入后台的页码的参数名称，默认：page
+                    limitName: 'limit'    //每页数据量的参数名，默认：limit
+                },
+                page: true,
+                cols: [[
+                    {field: 'id', title: 'ID', width: 80, align: 'center', sort: true, fixed: 'left'},
+                    {field: 'username', title: '用户名', align: 'center', width: 100},
+                    {field: 'tel', title: '手机', align: 'center', width: 120},
+                    {field: 'operate', title: '操作', minWidth: 200, align: 'center', toolbar: '#rowTool'}
+                ]]
+            });
+        }
+
+        loadTable();
+
+        {#监听表格中每行后面的工具条#}
+        table.on('tool(users_table_layui)', function (obj) {
+            var data = obj.data;    //获取当前行数据
+            var layEvent = obj.event;   //获取lay-event对应的值
+            var tr = obj.tr;    //获取当前行<tr>的DOM对象(如果有的话)
+
+            if (layEvent === 'detail') {
+                //详情操作
+                layer.alert(data.username)
+            }
+            if (layEvent === 'del') {
+                //删除操作
+                layer.confirm('真的要删除吗?', function (index) {
+                    $.ajax({
+                        url: '/admin/users',
+                        method: 'post',
+                        data: {
+                            method: 'delete',
+                            user_id: data.id
+                        },
+                        success: function (ret) {
+                            layer.alert(ret.msg)
+                        }
+                    });
+                    obj.del();  //删除对应行的dom结构,并更新缓存
+                    layer.close(index);     //关闭弹出层
+                })
+            }
+            if (layEvent === 'reset') {
+                //重置密码操作
+                layer.confirm('确定要重置[' + data.username + ']的密码?', function (index) {
+                    $.ajax({
+                        url: '/admin/users',
+                        method: 'post',
+                        data: {
+                            method: 'reset',
+                            user_id: data.id
+                        },
+                        success: function (ret) {
+                            layer.alert(ret.msg)
+                        }
+                    });
+                    layer.close(index);     //关闭弹出层
+                })
+
+                //同步更新缓存对应的值
+                //obj.update({user_id:'newID', tel:'newTel'})
+            }
+            if (layEvent === 'LAYTABLE_TIPS') {
+                layer.alert('头部工具栏扩展的右侧图标')
+            }
+
         })
-        //TODO 为每行的按钮添加响应事件
     </script>
 
-    {#表格每行后面的操作按钮集合#}
-    <script type="text/html" id="rowTool">
-        <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-        {#注释测试#}
-    </script>
+    {#添加用户的弹窗#}
+    <form class="layui-form" id="addUserForm" style="padding:40px;display:none">
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" required lay-verify="required" name="username">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" required lay-verify="required" name="tel">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="password" class="layui-input" required lay-verify="required" name="password1">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">确认密码</label>
+            <div class="layui-input-block">
+                <input type="password" class="layui-input" required lay-verify="required" name="password2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="submitAddUser">增加用户</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
 {% endblock %}

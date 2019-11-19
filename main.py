@@ -123,10 +123,10 @@ def add():
     if request.method == 'POST':
         title = request.form.get('title')
         content = request.form.get('content')
-        quest = Article(title=title, content=content)
-        quest.author = g.user
+        article = Article(title=title, content=content)
+        article.author = g.user
 
-        db.session.add(quest)
+        db.session.add(article)
         db.session.commit()
         result = {'message': '文章提交成功', 'status': 'ok'}
         return jsonify(result)
@@ -152,20 +152,80 @@ def admin_users():
         return render_template('admin/users.html')
 
     if request.method == 'POST':
-        page = request.form.get(key='page', default=1, type=int)
-        limit = request.form.get(key='limit', default=10, type=int)
-        pagination = User.query.paginate(page, per_page=limit, error_out=False)
+        method = request.form.get('method')
+        # 添加
+        if method == 'add':
+            f = request.form
+            user = User(username=f.get('username'), tel=f.get('tel'), password=f.get('password'))
+            db.session.add(user)
+            db.session.commit()
+            return jsonify({
+                'code': 0,
+                'msg': '用户创建成功!'
+            })
+        # 删除
+        if method == 'delete':
+            user_id = request.form.get('user_id')
+            user = User.query.filter(User.id == user_id).first()
+            if user:
+                db.session.delete(user)
+                db.session.commit()
+                return jsonify({
+                    'status': 0,
+                    'msg': '用户删除成功!'
+                })
+            else:
+                return jsonify({
+                    'status': -1,
+                    'msg': '用户删除失败,请联系管理员.'
+                })
+        # 查询
+        if method == 'query':
+            tel = request.form.get('tel')
+            user = User.query.filter(User.tel == tel).first()
+            if user:
+                users = [user.serialize]
+                return jsonify({
+                    'code': 0,
+                    'data': users
+                })
+            else:
+                return jsonify({
+                    'code': -1,
+                    'msg': '没有找到用户'
+                })
+        # 重置密码
+        if method == 'reset':
+            user_id = request.form.get('user_id')
+            user = User.query.filter(User.id == user_id).first()
+            if user:
+                user.password = '123456'
+                db.session.commit()
+                return jsonify({
+                    'status': 0,
+                    'msg': user.username + '密码已重置为123456'
+                })
+            else:
+                return jsonify({
+                    'status': -1,
+                    'msg': '密码重置失败,请联系管理员.'
+                })
+        # 分页获取
+        if method == 'paginate':
+            page = request.form.get(key='page', default=1, type=int)
+            limit = request.form.get(key='limit', default=10, type=int)
+            pagination = User.query.paginate(page, per_page=limit, error_out=False)
 
-        users = pagination.items
-        users = [i.serialize for i in users]
-        total_count = User.query.count()  # 获取全部user表中的记录数量
-        result = {
-            'code': 0,
-            'msg': '',
-            'count': total_count,  # 这个是全部数据集的数量,不是分页的单页数量
-            'data': users
-        }
-        return jsonify(result)
+            users = pagination.items
+            users = [i.serialize for i in users]
+            total_count = User.query.count()  # 获取全部user表中的记录数量
+            result = {
+                'code': 0,
+                'msg': '',
+                'count': total_count,  # 这个是全部数据集的数量,不是分页的单页数量
+                'data': users
+            }
+            return jsonify(result)
 
 
 @app.before_request

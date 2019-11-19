@@ -20,7 +20,7 @@ db.init_app(app)
 with app.app_context():
     # 生成随机用户信息
     fake = Faker('zh_CN')
-    for i in range(0, 20):
+    for i in range(0, 50):
         user = User(username=fake.name(), tel=fake.phone_number(), password=fake.password(6))
         db.session.add(user)
         db.session.commit()
