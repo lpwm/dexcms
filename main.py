@@ -26,7 +26,8 @@ def index():
     # 获取当前页码
     page = request.args.get(key='page', default=1, type=int)
     # 实现分页
-    pagination = Article.query.order_by(Article.create_time.desc()).paginate(page, per_page=3, error_out=False)
+    pagination = Article.query.order_by(
+        Article.create_time.desc()).paginate(page, per_page=5, error_out=False)
     content = {
         # 这里需要注意使用text('-create_time')作为排序的参数传入,和教程中不太一样
         # 貌似是版本不一样,试了下去掉-的话不需要加text()
@@ -140,6 +141,18 @@ def admin():
     """
     if request.method == 'GET':
         return render_template('admin/index.html')
+
+
+@app.route('/admin/category', methods=['GET', 'POST'])
+def admin_category():
+    """
+    栏目管理
+    :return:
+    """
+    if request.method == 'GET':
+        return render_template('admin/category.html')
+    if request.method == 'POST':
+        return render_template('admin/category.html')
 
 
 @app.route('/admin/users', methods=['GET', 'POST'])

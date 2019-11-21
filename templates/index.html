@@ -2,30 +2,28 @@
 {% import "_macros.html" as macros %}
 {% block title %}Flask建站练习{% endblock %}
 {% block body %}
-<div class="row">
-    <div class="col-12 shadow p-4">
-        {% for a in articles %}
-        <div class="card mt-4">
-            <div class="card-body">
-                <h4 class="card-title article_list_title">
-                    <a href="{{url_for('detail', article_id=a.id)}}">
-                        {{ a.title | truncate(50, True, '...') }}
-                    </a>
-                </h4>
-                <p>
-                    {{ a.create_time }}
-                </p>
-                <hr>
-                <!--使用|safe不对html标签转义,直接输出-->
-                <div class="card-text article_list_abstract">{{ a.content | safe | truncate(100, True, '...')}}</div>
-            </div>
+    <div class="row">
+        <div class="col-12 shadow p-4">
+            {% for a in articles %}
+                <div class="article_list">
+                    <h4 class="card-title article_list_title">
+                        <a href="{{ url_for('detail', article_id=a.id) }}">
+                            {{ a.title | truncate(50, True, '...') }}
+                        </a>
+                    </h4>
+                    <p>
+                        {{ a.create_time }}
+                    </p>
+                    {#使用|striptags清理html标签,输出纯文本#}
+                    <p>{{ a.content | striptags | truncate(100, True, '...') }}</p>
+                    <hr>
+                </div>
+            {% endfor %}
+            {% if pagination %}
+                <div class="pagination justify-content-end">
+                    {{ macros.pagination_widget(pagination, '.index') }}
+                </div>
+            {% endif %}
         </div>
-        {% endfor %}
-        {%if pagination%}
-        <div class="pagination justify-content-end">
-            {{ macros.pagination_widget(pagination, '.index') }}
-        </div>
-        {% endif %}
     </div>
-</div>
 {% endblock %}

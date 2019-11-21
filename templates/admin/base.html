@@ -18,7 +18,7 @@
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:">
-                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+
                     贤心
                     <span class="layui-nav-more"></span>
                 </a>
@@ -42,7 +42,7 @@
                         <dd><a href="">超链接</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item"><a href="">栏目管理</a></li>
+                <li class="layui-nav-item"><a href="{{ url_for('admin_category') }}">栏目管理</a></li>
                 <li class="layui-nav-item layui-this"><a href="{{ url_for('admin_users') }}">用户管理</a></li>
             </ul>
         </div>
@@ -60,8 +60,6 @@
 
 <script src="/static/jquery-3.4.1.min.js"></script>
 <script src="/static/layui/layui.all.js" charset="utf-8"></script>
-{#TODO ckeditor应当放到需要的页面中单独加载，减少其他页面无关引用#}
-{#<script src="/static/ckeditor_4.12.1.js"></script>#}
 <script>
     var element = layui.element;
 </script>
