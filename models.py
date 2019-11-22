@@ -17,6 +17,7 @@ class User(db.Model):
     tel = db.Column(db.String(11), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     username = db.Column(db.String(50), nullable=False)
+    role = db.Column(db.Integer, nullable=False)
 
     @property
     def serialize(self):
@@ -40,11 +41,11 @@ class Article(db.Model):
     create_time = db.Column(db.DateTime, default=datetime.now)  # 这里注意不能用now()，否则会导致时间不自动更新（一直停留在程序启动的时间点）
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     author = db.relationship('User', backref=db.backref('article'))
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
-    category = db.relationship('Category', backref=db.backref('articles'))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    category = db.relationship('Categories', backref=db.backref('articles'))
 
 
-class Category(db.Model):
-    __tablename__ = 'category'
+class Categories(db.Model):
+    __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)

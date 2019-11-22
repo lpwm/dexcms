@@ -32,18 +32,18 @@
     <div class="layui-side layui-bg-black">
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                <li class="layui-nav-item layui-nav-itemed">
+            <ul class="layui-nav layui-nav-tree" lay-filter="test" lay-shrink="all">
+                <li class="layui-nav-item">
                     <a class="" href="javascript:">文章管理<span class="layui-nav-more"></span></a>
                     <dl class="layui-nav-child">
                         <dd><a href="javascript:">列表一</a></dd>
                         <dd><a href="javascript:">列表二</a></dd>
                         <dd><a href="javascript:">列表三</a></dd>
-                        <dd><a href="">超链接</a></dd>
+                        <dd><a href="javascript:">超链接</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item"><a href="{{ url_for('admin_category') }}">栏目管理</a></li>
-                <li class="layui-nav-item layui-this"><a href="{{ url_for('admin_users') }}">用户管理</a></li>
+                <li class="layui-nav-item"><a href="javascript:">栏目管理</a></li>
+                <li class="layui-nav-item layui-this"><a href="javascript:">用户管理</a></li>
             </ul>
         </div>
     </div>
