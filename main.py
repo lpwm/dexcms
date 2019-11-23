@@ -112,7 +112,53 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/add', methods=['GET', 'POST'])
+@app.route('/admin/articles', methods=['GET', 'POST'])
+def articles():
+    """
+    管理全部文章
+    :return:
+    """
+    if request.method == 'GET':
+        return render_template('/admin/articles.html')
+    if request.method == 'POST':
+        method = request.form.get('method')
+
+        # 删除
+        if method == 'delete':
+            article_id = request.form.get('article_id')
+            article = Article.query.filter(Article.id == article_id).first()
+            if article:
+                db.session.delete(article)
+                db.session.commit()
+                return jsonify({
+                    'status': 0,
+                    'msg': '文章删除成功!'
+                })
+            else:
+                return jsonify({
+                    'status': -1,
+                    'msg': '文章删除失败,请联系管理员.'
+                })
+
+        # 分页获取
+        if method == 'paginate':
+            page = request.form.get(key='page', default=1, type=int)
+            limit = request.form.get(key='limit', default=10, type=int)
+            pagination = Article.query.paginate(page, per_page=limit, error_out=False)
+
+            arts = pagination.items
+            arts = [i.serialize for i in arts]
+            total_count = Article.query.count()  # 获取全部user表中的记录数量
+            result = {
+                'code': 0,
+                'msg': '',
+                'count': total_count,  # 这个是全部数据集的数量,不是分页的单页数量
+                'data': arts
+            }
+            return jsonify(result)
+
+
+@app.route('/admin/add_article', methods=['GET', 'POST'])
 @login_check
 def add():
     """
@@ -120,7 +166,7 @@ def add():
     :return:
     """
     if request.method == 'GET':
-        return render_template('add.html')
+        return render_template('/admin/add_article.html')
     if request.method == 'POST':
         title = request.form.get('title')
         content = request.form.get('content')
@@ -153,6 +199,15 @@ def admin_category():
         return render_template('admin/category.html')
     if request.method == 'POST':
         return render_template('admin/category.html')
+
+
+@app.route('/admin/dashboard', methods=['GET'])
+def admin_dashboard():
+    """
+    后台首页
+    :return:
+    """
+    return render_template('/admin/dashboard.html')
 
 
 @app.route('/admin/users', methods=['GET', 'POST'])

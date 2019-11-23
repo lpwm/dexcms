@@ -1,0 +1,156 @@
+{% extends 'admin/base.html' %}
+{% block body %}
+    <div class="layui-row">
+        <fieldset class="layui-elem-field">
+            <legend>常用操作</legend>
+
+            <form id="searchForm" class="layui-form">
+                <div class="layui-form-item" style="margin-top:15px">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">文章标题</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title_keyword" required lay-verify="required" placeholder="请输入标题关键词"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn" lay-submit lay-filter="doSearch">查找</button>
+                        <button type="reset" class="layui-btn layui-btn-primary" onclick="loadTable()">重置</button>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+
+                </div>
+            </form>
+        </fieldset>
+    </div>
+    <div class="layui-row">
+        <table id="articles_table" lay-filter="articles_table_layui"></table>
+    </div>
+    {#表格每行后面的操作按钮集合#}
+    <script type="text/html" id="rowTool">
+        <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+        <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        {#注释测试#}
+    </script>
+{% endblock %}
+{% block script %}
+    <script>
+
+        {#监听搜索框表单提交#}
+        var form = layui.form;
+        {#搜索用户表单#}
+        form.on('submit(doSearch)', function (data) {
+            var tel = data.field.tel
+            table.reload('articles_table', {
+                where: {
+                    method: 'query',
+                    tel: tel
+                },
+                page: {
+                    curr: 1
+                }
+            });
+            return false;
+        });
+
+        {#加载表格数据#}
+        var table = layui.table;
+
+        function loadTable() {
+            table.render({
+                elem: '#articles_table',
+                //height: 480,          //不指定固定值将自动适应高度
+                url: '/admin/articles',
+                method: 'post',     //这里是ajax的请求类型
+                where: {            //发送请求的其他参数
+                    method: 'paginate'  //传给后台的额外post数据
+                },
+                request: {
+                    pageName: 'page',     //调整post请求中传入后台的页码的参数名称，默认：page
+                    limitName: 'limit'    //每页数据量的参数名，默认：limit
+                },
+                page: true,
+                cols: [[
+                    {field: 'id', title: 'ID', width: 80, align: 'center', sort: true, fixed: 'left'},
+                    {field: 'title', title: '标题', align: 'center', width: 700},
+                    {field: 'author_name', title: '作者', align: 'center', width: 80},
+                    {field: 'category_name', title: '栏目', align: 'center', width: 200},
+                    {field: 'create_time', title: '创建时间', align: 'center', width: 200},
+                    {field: 'operate', title: '操作', minWidth: 200, align: 'center', toolbar: '#rowTool'}
+                ]]
+            });
+        }
+
+        loadTable();
+
+        {#监听表格中每行后面的工具条#}
+        table.on('tool(articles_table_layui)', function (obj) {
+            var data = obj.data;    //获取当前行数据
+            var layEvent = obj.event;   //获取lay-event对应的值
+            var tr = obj.tr;    //获取当前行<tr>的DOM对象(如果有的话)
+
+            if (layEvent === 'detail') {
+                //详情操作
+                layer.alert(data.title)
+            }
+            if (layEvent === 'del') {
+                //删除操作
+                layer.confirm('真的要删除吗?', function (index) {
+                    $.ajax({
+                        url: '/admin/articles',
+                        method: 'post',
+                        data: {
+                            method: 'delete',
+                            article_id: data.id
+                        },
+                        success: function (ret) {
+                            layer.alert(ret.msg)
+                        }
+                    });
+                    obj.del();  //删除对应行的dom结构,并更新缓存
+                    layer.close(index);     //关闭弹出层
+                })
+            }
+            if (layEvent === 'LAYTABLE_TIPS') {
+                layer.alert('头部工具栏扩展的右侧图标')
+            }
+
+        })
+    </script>
+
+    {#添加用户的弹窗#}
+    <form class="layui-form" id="addUserForm" style="padding:40px;display:none">
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" required lay-verify="required" name="username">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" required lay-verify="required" name="tel">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="password" class="layui-input" required lay-verify="required" name="password1">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">确认密码</label>
+            <div class="layui-input-block">
+                <input type="password" class="layui-input" required lay-verify="required" name="password2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="submitAddUser">增加用户</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

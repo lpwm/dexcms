@@ -1,0 +1,52 @@
+{% extends 'admin/base.html' %}
+{% block body %}
+    <form class="layui-form" method="POST" id="insertForm" onsubmit="return asyncSubmit()">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" required lay-verify="required" placeholder="请输入标题" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">正文</label>
+            <div class="layui-input-block">
+                <textarea class="form-control" id="content" rows="10"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
+{% block script %}
+    <script src="https://cdn.bootcss.com/ckeditor/4.12.1/ckeditor.js"></script>
+
+    <script>
+
+        //初始化CKeditor编辑器
+        CKEDITOR.replace('content');
+
+        //异步提交内容
+        function asyncSubmit() {
+            var data = new FormData($("#insertForm")[0]);   //注意jQuery选择出来的结果是个数组,需要加上[0]获取
+            data.append('content', CKEDITOR.instances['content'].getData());    //将CKEDITOR中的内容添加到data中,否则直接post里面不包含
+            $.ajax({
+                url: '/admin/add_article',
+                method: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (ret) {
+                    layer.msg(ret.message);
+                }
+            });
+            return false;
+        }
+    </script>
+{% endblock %}

@@ -6,3 +6,9 @@
     height: 4rem;
     overflow: hidden;
 }
+
+.main-iframe{
+    width:100%;
+    height:99%;
+    border:0;
+}

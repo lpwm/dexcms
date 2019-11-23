@@ -41,8 +41,23 @@ class Article(db.Model):
     create_time = db.Column(db.DateTime, default=datetime.now)  # 这里注意不能用now()，否则会导致时间不自动更新（一直停留在程序启动的时间点）
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     author = db.relationship('User', backref=db.backref('article'))
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), default=0)
     category = db.relationship('Categories', backref=db.backref('articles'))
+
+    @property
+    def serialize(self):
+        """
+        转json格式用
+        :return:
+        """
+        return {
+            'id': self.id,
+            'title': self.title,
+            # 'content': self.content,
+            'create_time': self.create_time,
+            'author_name': self.author.username,
+            'category_name': self.category.name
+        }
 
 
 class Categories(db.Model):
