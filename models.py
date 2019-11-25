@@ -64,3 +64,14 @@ class Categories(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
+
+    @property
+    def serialize(self):
+        """
+        转json格式用
+        :return:
+        """
+        return {
+            'id': self.id,
+            'name': self.name
+        }

@@ -198,7 +198,61 @@ def admin_category():
     if request.method == 'GET':
         return render_template('admin/category.html')
     if request.method == 'POST':
-        return render_template('admin/category.html')
+        method = request.form.get('method')
+        # 添加
+        if method == 'add':
+            cate_name = request.form.get('cate_name')
+            cate = Categories(name=cate_name)
+            db.session.add(cate)
+            db.session.commit()
+            return jsonify({
+                'status': 0,
+                'msg': '栏目添加成功!'
+            })
+        # 编辑
+        if method == 'edit':
+            cate_id = request.form.get('cate_id')
+            cate_name = request.form.get('cate_name')
+            cate = Categories.query.filter(Categories.id == cate_id).first()
+            cate.name = cate_name
+            db.session.commit()
+            return jsonify({
+                'status': 0,
+                'msg': '栏目修改成功!'
+            })
+        # 删除
+        if method == 'delete':
+            cate_id = request.form.get('cate_id')
+            cate = Categories.query.filter(Categories.id == cate_id).first()
+            if cate:
+                db.session.delete(cate)
+                db.session.commit()
+                return jsonify({
+                    'status': 0,
+                    'msg': '栏目删除成功!'
+                })
+            else:
+                return jsonify({
+                    'status': -1,
+                    'msg': '栏目删除失败,请联系管理员.'
+                })
+
+        # 分页获取
+        if method == 'paginate':
+            page = request.form.get(key='page', default=1, type=int)
+            limit = request.form.get(key='limit', default=10, type=int)
+            pagination = Categories.query.paginate(page, per_page=limit, error_out=False)
+
+            cates = pagination.items
+            cates = [i.serialize for i in cates]
+            total_count = Categories.query.count()  # 获取全部user表中的记录数量
+            result = {
+                'code': 0,
+                'msg': '',
+                'count': total_count,  # 这个是全部数据集的数量,不是分页的单页数量
+                'data': cates
+            }
+            return jsonify(result)
 
 
 @app.route('/admin/dashboard', methods=['GET'])
